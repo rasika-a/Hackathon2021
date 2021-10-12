@@ -8,14 +8,16 @@
 #include <iothubtransportmqtt.h>
 #include "ntp.h"
 #include <DHT.h>
+#include "TFT_eSPI.h"
 
+//Define TFT Screen
+TFT_eSPI tft;
 //Define IP Address
 IPAddress ip;
 //Initialize the DHT sensor
 DHT dht(D0, DHT11);
 // Initialize the Azure IoT Hub
 IOTHUB_DEVICE_CLIENT_LL_HANDLE _device_ll_handle;
-
 
 static void connectionStatusCallback(IOTHUB_CLIENT_CONNECTION_STATUS result, IOTHUB_CLIENT_CONNECTION_STATUS_REASON reason, void *user_context)
 {
@@ -90,6 +92,14 @@ void connectWiFi()
 
 void setup()
 {
+    //This needs to be checked as its not working in VSC but it is via Arduino IDE
+    tft.begin();
+    tft.setRotation(3);
+    tft.fillScreen(TFT_RED); // fills entire the screen with colour red
+    //******************************************************************************************
+
+    delay(5000);
+
 	Serial.begin(9600);
 
 	while (!Serial)
@@ -108,9 +118,10 @@ void setup()
     initTime();
 
     connectIoTHub();
-    delay(1000);
+    delay(5000);
 
     dht.begin();
+
 }
 
 void work_delay(int delay_time)
@@ -125,7 +136,7 @@ void work_delay(int delay_time)
 }
 
 void loop()
-{   
+{
     float temp_hum_val[2] = {0};
     dht.readTempAndHumidity(temp_hum_val);
 
